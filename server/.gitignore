@@ -1,0 +1,3 @@
+.track-request-auth.json
+.track-request-auth.json.*.tmp
+/node_modules/

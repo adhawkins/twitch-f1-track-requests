@@ -1,0 +1,12 @@
+[Unit]
+Description=F1 Track Requests server
+
+[Service]
+Type=simple
+WorkingDirectory=%h/software/twitch-f1-track-requests/server
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

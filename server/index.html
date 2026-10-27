@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#101014">
+	<title>F1 Track Requests</title>
+	<link rel="stylesheet" href="/styles.css">
+	<script src="/app.js" defer></script>
+</head>
+
+<body>
+	<main class="page">
+		<header class="topbar">
+			<div id="channel-profile" class="channel-profile" aria-live="polite">
+				<div class="channel-avatar-placeholder" aria-hidden="true">F1</div>
+				<div class="channel-details">
+					<p id="channel-kicker" class="channel-kicker">TWITCH CHANNEL</p>
+					<h2 id="channel-name" class="channel-name">Loading channel…</h2>
+					<p id="stream-title" class="stream-title"></p>
+					<p id="channel-info-error" class="channel-info-error" hidden></p>
+				</div>
+			</div>
+			<div id="account" class="account"></div>
+		</header>
+
+		<section class="intro">
+			<a class="brand" href="/">F1 <span>TRACK REQUESTS</span></a>
+			<p class="eyebrow">THE RACE QUEUE</p>
+			<h1>Pick the next <span>circuit.</span></h1>
+			<p class="subtitle">One request per viewer. Channel moderators can request multiple circuits.</p>
+		</section>
+
+		<div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+		<div class="content-grid">
+			<section class="panel request-panel" aria-labelledby="request-heading">
+				<div class="panel-heading">
+					<div>
+						<p class="eyebrow">YOUR PICK</p>
+						<h2 id="request-heading">Request a track</h2>
+					</div>
+				</div>
+				<p id="requests-disabled-message" class="request-disabled-message" role="status" aria-live="polite" hidden>
+					New track requests are currently disabled by a moderator.
+				</p>
+				<p id="request-help" class="muted">Sign in with Twitch to join the queue.</p>
+				<form id="request-form">
+					<label for="track-select">Available circuits</label>
+					<select id="track-select" name="trackId" required disabled>
+						<option value="">Loading tracks…</option>
+					</select>
+					<div id="assignment-controls" class="assignment-controls" hidden>
+						<label class="assign-checkbox" for="assign-track-checkbox">
+							<input id="assign-track-checkbox" type="checkbox">
+							Assign this track to a recent chatter
+						</label>
+						<div id="assignment-select-wrapper" hidden>
+							<label for="recent-chatter-select">Recent chatter</label>
+							<select id="recent-chatter-select" disabled>
+								<option value="">No recent chatters available</option>
+							</select>
+							<p id="assignment-help" class="assignment-help">Chatters seen in the last 30 minutes are available. An assigned request uses their one request for this round.</p>
+						</div>
+					</div>
+					<button id="request-button" class="button button-primary" type="submit" disabled>Request this
+						track</button>
+				</form>
+				<div class="rule">
+					<p>Each circuit can only be requested once. A moderator can clear the queue or allow new requests.
+					</p>
+				</div>
+			</section>
+
+			<section class="panel queue-panel" aria-labelledby="queue-heading">
+				<div class="panel-heading">
+					<div>
+						<h2 id="queue-heading">Track queue</h2>
+					</div>
+					<span id="queue-count" class="queue-count">0 TRACKS</span>
+				</div>
+				<ol id="request-list" class="request-list"></ol>
+				<p id="empty-state" class="empty-state">No tracks requested yet. Be the first on the grid.</p>
+			</section>
+		</div>
+
+		<footer class="footer">
+			<span>Queue resets clear the list and allow a new request from everyone.</span>
+			<div id="moderator-tools" class="moderator-tools"></div>
+		</footer>
+	</main>
+</body>
+
+</html>
