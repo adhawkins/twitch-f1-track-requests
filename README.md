@@ -198,3 +198,36 @@ assignment checkbox and chatter list are available in the web request form.
 Requests, login sessions, and user request limits are held in memory and are
 cleared when the server restarts. Twitch account authorizations persist in
 `track-requests/.track-request-auth.json`.
+
+### Stream Deck plugin
+
+The `streamdeck-plugin` directory contains a plugin for the Stream Deck app.
+It provides toggle buttons for track selection and new requests, plus buttons
+to reset tracks, allow new requests, complete the next request, and complete a
+specific request by ID. The plugin connects to `/api/events` without a token to
+receive the current state and live updates. Green means enabled, red means
+disabled, and gray means the server cannot be reached. Commands are sent over
+that WebSocket and require the configured `httpApi.token`; it is not needed to
+connect or receive updates. The web interface uses the same WebSocket to
+receive user-specific state and live queue updates.
+
+Build it with Node.js 24 or later. It requires Stream Deck 7.1 or later:
+
+```sh
+cd streamdeck-plugin
+npm ci
+npm run build
+```
+
+Copy `streamdeck-plugin/com.gently.f1-track-requests.sdPlugin` into the Stream
+Deck plugins directory and restart the Stream Deck app. The directory is
+`%APPDATA%\Elgato\StreamDeck\Plugins` on Windows and
+`~/Library/Application Support/com.elgato.StreamDeck/Plugins` on macOS.
+
+Select any plugin action and configure the HTTP API server URL (for example
+`https://trackrequests.example.com`) and the same 32-character-or-longer token
+configured under `httpApi.token` in the server's `config.json`. These settings
+are shared by all plugin buttons and stored as Stream Deck global settings.
+For the Complete Request action, also enter the request's ID from
+`GET /api/state`. The property inspector loads Elgato's `sdpi-components`
+library from its CDN when editing settings.

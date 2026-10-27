@@ -54,6 +54,153 @@ const requestedUsers = new Set();
 const recentChatters = new Map();
 let trackSelectionEnabled = true;
 let requestsEnabled = true;
+let apiWebSocketServer;
+const apiWebSocketRequests = new WeakMap();
+let stateRevision = 0;
+
+function getApiConfigurationState() {
+	return {
+		type: "state",
+		trackSelectionEnabled,
+		requestsEnabled,
+	};
+}
+
+async function sendApiPageState(socket, request, revision) {
+	try {
+		const state = await getState(request);
+		if (revision !== stateRevision || socket.readyState !== WebSocket.OPEN) return;
+		socket.send(JSON.stringify({ type: "page-state", state }), error => {
+			if (error) log("http-api.websocket.send-error", { message: error.message });
+		});
+	} catch (error) {
+		log("http-api.websocket.state-error", { message: error.message });
+	}
+}
+
+function broadcastApiConfigurationState() {
+	if (!apiWebSocketServer) return;
+	const revision = ++stateRevision;
+	const message = JSON.stringify(getApiConfigurationState());
+	for (const client of apiWebSocketServer.clients) {
+		if (client.readyState === WebSocket.OPEN) {
+			client.send(message, error => {
+				if (error) log("http-api.websocket.send-error", { message: error.message });
+			});
+			const request = apiWebSocketRequests.get(client);
+			if (request) void sendApiPageState(client, request, revision);
+		}
+	}
+}
+
+function sendApiWebSocketError(socket, commandId, status, message) {
+	socket.send(JSON.stringify({
+		type: "result",
+		commandId,
+		ok: false,
+		status,
+		error: message,
+	}));
+}
+
+function getHttpApiWebSocketAuthError(token) {
+	const configuredToken = config.httpApi && config.httpApi.token;
+	if (typeof configuredToken !== "string" || configuredToken.length < 32
+		|| configuredToken.startsWith("replace-with-")) {
+		return { status: 503, message: "The HTTP API is not configured." };
+	}
+	if (typeof token !== "string" || !token.trim()) {
+		return { status: 401, message: "HTTP API authentication is required for commands." };
+	}
+	const provided = Buffer.from(token);
+	const expected = Buffer.from(configuredToken);
+	if (provided.length !== expected.length || !crypto.timingSafeEqual(provided, expected)) {
+		return { status: 401, message: "The HTTP API token is invalid." };
+	}
+	return undefined;
+}
+
+function handleApiWebSocketCommand(socket, data, isBinary) {
+	let message;
+	try {
+		if (isBinary) throw new HttpError(400, "WebSocket commands must be JSON text.");
+		message = JSON.parse(data.toString());
+	} catch (error) {
+		const status = error instanceof HttpError ? error.status : 400;
+		const text = error instanceof HttpError ? error.message : "The WebSocket command is not valid JSON.";
+		sendApiWebSocketError(socket, undefined, status, text);
+		return;
+	}
+
+	const commandId = message && typeof message.commandId === "string"
+		&& message.commandId.length <= 128 ? message.commandId : undefined;
+	if (!commandId || message.type !== "command" || typeof message.action !== "string") {
+		sendApiWebSocketError(socket, commandId, 400, "The WebSocket command is invalid.");
+		return;
+	}
+	const authError = getHttpApiWebSocketAuthError(message.token);
+	if (authError) {
+		sendApiWebSocketError(socket, commandId, authError.status, authError.message);
+		return;
+	}
+
+	try {
+		let result = { ok: true };
+		switch (message.action) {
+			case "reset-tracks":
+				resetTrackList();
+				break;
+			case "allow-new-requests":
+				allowNewRequests();
+				break;
+			case "disable-track-selection":
+				setTrackSelectionEnabled(false);
+				result.trackSelectionEnabled = trackSelectionEnabled;
+				break;
+			case "enable-track-selection":
+				setTrackSelectionEnabled(true);
+				result.trackSelectionEnabled = trackSelectionEnabled;
+				break;
+			case "disable-requests":
+				setRequestsEnabled(false);
+				result.requestsEnabled = requestsEnabled;
+				break;
+			case "enable-requests":
+				setRequestsEnabled(true);
+				result.requestsEnabled = requestsEnabled;
+				break;
+			case "complete-next": {
+				const item = requests.find(entry => !entry.completed);
+				if (!item) throw new HttpError(409, "There are no pending track requests to complete.");
+				completeRequest(item.id);
+				result.requestId = item.id;
+				result.trackName = item.trackName;
+				break;
+			}
+			case "complete-request": {
+				if (typeof message.requestId !== "string" || !/^[0-9a-f-]{36}$/i.test(message.requestId)) {
+					throw new HttpError(400, "A valid request ID is required.");
+				}
+				const item = completeRequest(message.requestId);
+				result.requestId = item.id;
+				result.trackName = item.trackName;
+				break;
+			}
+			default:
+				throw new HttpError(400, "Unknown HTTP API command.");
+		}
+		socket.send(JSON.stringify({ type: "result", commandId, ...result }));
+	} catch (error) {
+		if (error instanceof HttpError) {
+			sendApiWebSocketError(socket, commandId, error.status, error.message);
+			return;
+		}
+		log("http-api.websocket.command-error", { commandId, message: error.message });
+		console.error("WebSocket API command failed:", error);
+		sendApiWebSocketError(socket, commandId, 500, "An unexpected server error occurred.");
+	}
+}
+
 const twitchUserProfileImages = new Map();
 const twitchUserProfileImagePromises = new Map();
 const trackIds = new Set();
@@ -391,6 +538,7 @@ function resetTrackList() {
 	const previousLimitCount = requestedUsers.size;
 	requests.length = 0;
 	requestedUsers.clear();
+	broadcastApiConfigurationState();
 	log("track-list.reset", { previousRequestCount, previousLimitCount });
 	queueChatMessage("The track list has been cleared.");
 }
@@ -398,12 +546,15 @@ function resetTrackList() {
 function allowNewRequests() {
 	const previousLimitCount = requestedUsers.size;
 	requestedUsers.clear();
+	broadcastApiConfigurationState();
 	log("requests.reopened", { previousLimitCount, requestedTrackCount: requests.length });
 	queueChatMessage("New track requests are now allowed.");
 }
 
 function setTrackSelectionEnabled(enabled) {
+	const changed = trackSelectionEnabled !== enabled;
 	trackSelectionEnabled = enabled;
+	if (changed) broadcastApiConfigurationState();
 	log("track-selection.updated", { enabled });
 	queueChatMessage(enabled
 		? "Track selection is now enabled."
@@ -411,7 +562,9 @@ function setTrackSelectionEnabled(enabled) {
 }
 
 function setRequestsEnabled(enabled) {
+	const changed = requestsEnabled !== enabled;
 	requestsEnabled = enabled;
+	if (changed) broadcastApiConfigurationState();
 	log("requests.updated", { enabled });
 	queueChatMessage(enabled
 		? "New track requests are now enabled."
@@ -424,6 +577,7 @@ function completeRequest(requestId) {
 	if (!item.completed) {
 		item.completed = true;
 		item.completedAt = new Date().toISOString();
+		broadcastApiConfigurationState();
 	}
 	return item;
 }
@@ -892,6 +1046,7 @@ function createTrackRequest(actor, track, moderator, source = "chat", assignedUs
 		createdAt: new Date().toISOString(),
 	});
 	requestedUsers.add(requester.id);
+	broadcastApiConfigurationState();
 	log("request.accepted", {
 		trackId: track.id,
 		moderator,
@@ -1755,6 +1910,49 @@ if (chatAuthorization) {
 }
 const server = http.createServer((request, response) => {
 	handleRequest(request, response);
+});
+apiWebSocketServer = new WebSocket.Server({ noServer: true, maxPayload: 4096 });
+apiWebSocketServer.on("connection", (socket, request) => {
+	apiWebSocketRequests.set(socket, request);
+	socket.send(JSON.stringify(getApiConfigurationState()), error => {
+		if (error) log("http-api.websocket.send-error", { message: error.message });
+	});
+	void sendApiPageState(socket, request, stateRevision);
+	socket.on("message", (data, isBinary) => handleApiWebSocketCommand(socket, data, isBinary));
+});
+server.on("upgrade", (request, socket, head) => {
+	let url;
+	try {
+		url = new URL(request.url, "http://localhost");
+	} catch {
+		socket.destroy();
+		return;
+	}
+	if (url.pathname !== "/api/events") {
+		socket.destroy();
+		return;
+	}
+	const origin = request.headers.origin;
+	if (origin) {
+		try {
+			const originUrl = new URL(origin);
+			if ((originUrl.protocol !== "http:" && originUrl.protocol !== "https:")
+				|| originUrl.host !== request.headers.host) {
+				socket.end("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n");
+				return;
+			}
+		} catch {
+			socket.end("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n");
+			return;
+		}
+	}
+	if (!request.headers.host) {
+		socket.end("HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n");
+		return;
+	}
+	apiWebSocketServer.handleUpgrade(request, socket, head, webSocket => {
+		apiWebSocketServer.emit("connection", webSocket, request);
+	});
 });
 server.listen(config.port, () => {
 	if (verbose) {

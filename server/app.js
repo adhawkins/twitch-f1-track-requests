@@ -397,6 +397,7 @@ async function refresh() {
 	log("state.refresh.started", { sequence });
 	const nextState = await api("/api/state");
 	const sessionResponse = await api("/api/session");
+	if (sequence !== refreshSequence) return;
 	state = { ...nextState, csrfToken: sessionResponse.csrfToken };
 	log("state.refresh.completed", {
 		sequence,
@@ -408,6 +409,43 @@ async function refresh() {
 		streamerConnected: state.streamerConnected,
 	});
 	render();
+}
+
+function connectStateSocket() {
+	const url = new URL("/api/events", window.location.href);
+	url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+	const socket = new WebSocket(url);
+
+	socket.addEventListener("open", () => {
+		log("state.websocket.connected");
+	});
+	socket.addEventListener("message", event => {
+		let message;
+		try {
+			message = JSON.parse(event.data);
+		} catch {
+			log("state.websocket.invalid-message");
+			return;
+		}
+		if (message.type !== "page-state" || !message.state
+			|| !Array.isArray(message.state.tracks) || !Array.isArray(message.state.requests)) {
+			return;
+		}
+		refreshSequence++;
+		state = { ...message.state, csrfToken: state?.csrfToken };
+		log("state.websocket.updated", {
+			requestCount: state.requests.length,
+			trackCount: state.tracks.length,
+		});
+		render();
+	});
+	socket.addEventListener("error", () => {
+		log("state.websocket.error");
+	});
+	socket.addEventListener("close", () => {
+		log("state.websocket.disconnected");
+		window.setTimeout(connectStateSocket, 1000);
+	});
 }
 
 form.addEventListener("submit", async event => {
@@ -454,10 +492,4 @@ refresh().catch(error => {
 	log("state.refresh.failed", { name: error.name, message: error.message });
 	showNotice(error.message, true);
 	requestHelp.textContent = "The request service could not be reached. Refresh to try again.";
-});
-window.setInterval(() => {
-	refresh().catch(error => {
-		log("state.refresh.failed", { name: error.name, message: error.message });
-		showNotice(error.message, true);
-	});
-}, 10000);
+}).finally(connectStateSocket);

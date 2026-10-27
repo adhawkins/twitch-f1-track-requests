@@ -1,0 +1,83 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "Actions": [
+    {
+      "Icon": "imgs/action",
+      "Name": "Toggle Track Selection",
+      "Controllers": ["Keypad"],
+      "DisableAutomaticStates": true,
+      "Tooltip": "Shows whether track selection is enabled. Press to toggle it.",
+      "PropertyInspectorPath": "ui/configuration.html",
+      "States": [
+        { "Image": "imgs/enabled", "Title": "ENABLED", "TitleAlignment": "middle" },
+        { "Image": "imgs/disabled", "Title": "DISABLED", "TitleAlignment": "middle" }
+      ],
+      "UUID": "com.gently.f1-track-requests.toggle-track-selection"
+    },
+    {
+      "Icon": "imgs/action",
+      "Name": "Toggle New Requests",
+      "Controllers": ["Keypad"],
+      "DisableAutomaticStates": true,
+      "Tooltip": "Shows whether new requests are enabled. Press to toggle them.",
+      "PropertyInspectorPath": "ui/configuration.html",
+      "States": [
+        { "Image": "imgs/enabled", "Title": "ENABLED", "TitleAlignment": "middle" },
+        { "Image": "imgs/disabled", "Title": "DISABLED", "TitleAlignment": "middle" }
+      ],
+      "UUID": "com.gently.f1-track-requests.toggle-new-requests"
+    },
+    {
+      "Icon": "imgs/action",
+      "Name": "Reset Tracks",
+      "Controllers": ["Keypad"],
+      "Tooltip": "Clear all requests and viewer limits.",
+      "PropertyInspectorPath": "ui/configuration.html",
+      "States": [{ "Image": "imgs/button", "Title": "RESET TRACKS" }],
+      "UUID": "com.gently.f1-track-requests.reset-tracks"
+    },
+    {
+      "Icon": "imgs/action",
+      "Name": "Allow New Requests",
+      "Controllers": ["Keypad"],
+      "Tooltip": "Clear viewer limits while keeping the queue.",
+      "PropertyInspectorPath": "ui/configuration.html",
+      "States": [{ "Image": "imgs/button", "Title": "ALLOW NEW REQUESTS" }],
+      "UUID": "com.gently.f1-track-requests.allow-new-requests"
+    },
+    {
+      "Icon": "imgs/action",
+      "Name": "Complete Next",
+      "Controllers": ["Keypad"],
+      "Tooltip": "Mark the oldest incomplete request as complete.",
+      "PropertyInspectorPath": "ui/configuration.html",
+      "States": [{ "Image": "imgs/button", "Title": "COMPLETE NEXT" }],
+      "UUID": "com.gently.f1-track-requests.complete-next"
+    },
+    {
+      "Icon": "imgs/action",
+      "Name": "Complete Request",
+      "Controllers": ["Keypad"],
+      "Tooltip": "Mark a request complete by its request ID.",
+      "PropertyInspectorPath": "ui/configuration.html",
+      "States": [{ "Image": "imgs/button", "Title": "COMPLETE REQUEST" }],
+      "UUID": "com.gently.f1-track-requests.complete-request"
+    }
+  ],
+  "Author": "F1 Track Requests",
+  "Category": "F1 Track Requests",
+  "CategoryIcon": "imgs/category",
+  "CodePath": "bin/plugin.js",
+  "Description": "Control the F1 Track Requests HTTP API.",
+  "Icon": "imgs/plugin",
+  "Name": "F1 Track Requests",
+  "Nodejs": { "Version": "24" },
+  "OS": [
+    { "Platform": "mac", "MinimumVersion": "13" },
+    { "Platform": "windows", "MinimumVersion": "10" }
+  ],
+  "SDKVersion": 2,
+  "Software": { "MinimumVersion": "7.1" },
+  "UUID": "com.gently.f1-track-requests",
+  "Version": "1.0.0.3"
+}

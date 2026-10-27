@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>F1 Track Requests settings</title>
+	<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	<style>
+		body { padding: 12px; }
+		input { box-sizing: border-box; width: 100%; }
+		#status { min-height: 1.4em; color: #aaa; }
+	</style>
+</head>
+<body>
+	<sdpi-item label="HTTP API server URL">
+		<input id="serverUrl" type="url" placeholder="https://example.com">
+	</sdpi-item>
+	<sdpi-item label="HTTP API token">
+		<input id="token" type="password" autocomplete="off" placeholder="At least 32 characters">
+	</sdpi-item>
+	<sdpi-item label="Request ID">
+		<sdpi-textfield setting="requestId" placeholder="UUID (Complete Request only)"></sdpi-textfield>
+	</sdpi-item>
+	<p id="status" role="status"></p>
+	<script>
+		const { streamDeckClient } = SDPIComponents;
+		const serverUrl = document.getElementById("serverUrl");
+		const token = document.getElementById("token");
+		const status = document.getElementById("status");
+		let saveTimer;
+
+		async function loadSettings() {
+			try {
+				const settings = await streamDeckClient.getGlobalSettings();
+				serverUrl.value = settings.serverUrl || "";
+				token.value = settings.token || "";
+				status.textContent = "";
+			} catch (error) {
+				status.textContent = `Unable to load settings: ${error.message}`;
+			}
+		}
+
+		function saveSettings() {
+			clearTimeout(saveTimer);
+			saveTimer = setTimeout(async () => {
+				try {
+					await streamDeckClient.setGlobalSettings({
+						serverUrl: serverUrl.value.trim(),
+						token: token.value.trim(),
+					});
+					status.textContent = "Settings saved.";
+				} catch (error) {
+					status.textContent = `Unable to save settings: ${error.message}`;
+				}
+			}, 250);
+		}
+
+		serverUrl.addEventListener("input", saveSettings);
+		token.addEventListener("input", saveSettings);
+		loadSettings();
+	</script>
+</body>
+</html>
