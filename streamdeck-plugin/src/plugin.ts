@@ -287,13 +287,11 @@ abstract class ToggleAction extends SingletonAction<GlobalSettings> {
 		if (!state) {
 			await Promise.all(visible.map(async button => {
 				await button.setImage("imgs/offline.svg");
-				await button.setTitle("API OFFLINE");
 			}));
 			return;
 		}
 		await Promise.all(visible.map(async button => {
 			await button.setImage();
-			await button.setTitle();
 			await button.setState(this.getEnabled(state) ? 0 : 1);
 		}));
 	}

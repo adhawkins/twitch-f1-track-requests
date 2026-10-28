@@ -1,5 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
   <rect width="72" height="72" rx="12" fill="#626b78"/>
-  <path d="M36 13 61 57H11z" fill="#fff"/>
-  <path d="M36 28v15m0 7v1" fill="none" stroke="#626b78" stroke-linecap="round" stroke-width="5"/>
+  <path d="M36 7 51 34H21z" fill="#fff"/>
+  <path d="M36 17v9m0 4v1" fill="none" stroke="#626b78" stroke-linecap="round" stroke-width="3"/>
+  <g fill="#fff" font-family="Arial, sans-serif" font-size="8" font-weight="700" text-anchor="middle">
+    <text x="36" y="48">API</text>
+    <text x="36" y="60">Offline</text>
+  </g>
 </svg>

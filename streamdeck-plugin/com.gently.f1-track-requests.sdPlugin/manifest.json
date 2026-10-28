@@ -9,8 +9,8 @@
       "Tooltip": "Shows whether track selection is enabled. Press to toggle it.",
       "PropertyInspectorPath": "ui/configuration.html",
       "States": [
-        { "Image": "imgs/enabled", "Title": "Selection\nEnabled", "TitleAlignment": "bottom" },
-        { "Image": "imgs/disabled", "Title": "Selection\nDisabled", "TitleAlignment": "bottom" }
+        { "Image": "imgs/selection-enabled", "Title": "", "TitleAlignment": "bottom", "ShowTitle": false },
+        { "Image": "imgs/selection-disabled", "Title": "", "TitleAlignment": "bottom", "ShowTitle": false }
       ],
       "UUID": "com.gently.f1-track-requests.toggle-track-selection"
     },
@@ -22,8 +22,8 @@
       "Tooltip": "Shows whether new requests are enabled. Press to toggle them.",
       "PropertyInspectorPath": "ui/configuration.html",
       "States": [
-        { "Image": "imgs/enabled", "Title": "Requests\nEnabled", "TitleAlignment": "bottom" },
-        { "Image": "imgs/disabled", "Title": "Requests\nDisabled", "TitleAlignment": "bottom" }
+        { "Image": "imgs/requests-enabled", "Title": "", "TitleAlignment": "bottom", "ShowTitle": false },
+        { "Image": "imgs/requests-disabled", "Title": "", "TitleAlignment": "bottom", "ShowTitle": false }
       ],
       "UUID": "com.gently.f1-track-requests.toggle-new-requests"
     },
@@ -33,7 +33,7 @@
       "Controllers": ["Keypad"],
       "Tooltip": "Clear all requests and viewer limits.",
       "PropertyInspectorPath": "ui/configuration.html",
-      "States": [{ "Image": "imgs/button", "Title": "Reset\nTracks" }],
+      "States": [{ "Image": "imgs/reset-tracks", "Title": "", "TitleAlignment": "bottom", "ShowTitle": false }],
       "UUID": "com.gently.f1-track-requests.reset-tracks"
     },
     {
@@ -42,7 +42,7 @@
       "Controllers": ["Keypad"],
       "Tooltip": "Clear viewer limits while keeping the queue.",
       "PropertyInspectorPath": "ui/configuration.html",
-      "States": [{ "Image": "imgs/button", "Title": "Allow New\nRequests" }],
+      "States": [{ "Image": "imgs/allow-new-requests", "Title": "", "TitleAlignment": "bottom", "ShowTitle": false }],
       "UUID": "com.gently.f1-track-requests.allow-new-requests"
     },
     {
@@ -51,7 +51,7 @@
       "Controllers": ["Keypad"],
       "Tooltip": "Mark the oldest incomplete request as complete.",
       "PropertyInspectorPath": "ui/configuration.html",
-      "States": [{ "Image": "imgs/button", "Title": "Complete\nNext" }],
+      "States": [{ "Image": "imgs/complete-next", "Title": "", "TitleAlignment": "bottom", "ShowTitle": false }],
       "UUID": "com.gently.f1-track-requests.complete-next"
     },
     {
@@ -79,5 +79,5 @@
   "SDKVersion": 2,
   "Software": { "MinimumVersion": "7.1" },
   "UUID": "com.gently.f1-track-requests",
-  "Version": "1.0.0.7"
+  "Version": "1.0.0.16"
 }
