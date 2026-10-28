@@ -1,0 +1,58 @@
+:root {
+	color-scheme: dark;
+	font-family: Arial, sans-serif;
+	background: #101014;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+}
+
+#track-list {
+	width: 100%;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 8px;
+	scrollbar-color: #55555f #19191f;
+	scrollbar-width: thin;
+}
+
+.tracks {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.track {
+	display: flex;
+	min-height: 36px;
+	align-items: center;
+	justify-content: center;
+	padding: 7px 10px;
+	border-radius: 5px;
+	color: #fff;
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 1.2;
+	text-align: center;
+}
+
+.track--not-added {
+	background: #c93636;
+}
+
+.track--added {
+	background: #168a4a;
+}

@@ -1819,6 +1819,9 @@ function serveStatic(response, url) {
 		["/index.html", "index.html"],
 		["/app.js", "app.js"],
 		["/styles.css", "styles.css"],
+		["/dock.html", "dock.html"],
+		["/dock.js", "dock.js"],
+		["/dock.css", "dock.css"],
 	]);
 	const publicFile = publicFiles.get(pathname);
 	if (!publicFile) throw new HttpError(404, "Not found.");

@@ -46,6 +46,13 @@ while live, its stream title.
 Protect the Twitch client secret, and do not expose it publicly. Keep the
 backend HTTP port reachable only by Traefik and trusted local services.
 
+### OBS track status dock
+
+Open `<baseUrl>/dock.html` as an OBS custom browser dock. It displays each
+track selected by a user in red until a moderator marks its request complete,
+then green. The dock updates live and, when the list is taller than the dock,
+scrolls the first incomplete request near the center.
+
 ### Verbose logging
 
 Routine server logs are disabled by default. Start the server with `--verbose`
