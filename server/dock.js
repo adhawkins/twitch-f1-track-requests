@@ -10,8 +10,43 @@ function render(state) {
 		const added = request.completed;
 		const item = document.createElement("li");
 		item.className = `track ${added ? "track--added" : "track--not-added"}`;
-		item.textContent = request.trackName;
-		item.setAttribute("aria-label", `${request.trackName}: ${added ? "complete" : "not complete"}`);
+		const details = document.createElement("div");
+		details.className = "track__details";
+		const requester = document.createElement("span");
+		requester.className = "track__requester";
+		const requesterName = request.requesterLogin || request.requestedFor || request.requestedBy || "Unknown requester";
+		if (request.requesterAvatarUrl) {
+			const avatar = document.createElement("img");
+			avatar.className = "track__avatar";
+			avatar.src = request.requesterAvatarUrl;
+			avatar.alt = "";
+			avatar.width = 20;
+			avatar.height = 20;
+			avatar.referrerPolicy = "no-referrer";
+			avatar.addEventListener("error", () => avatar.remove(), { once: true });
+			requester.append(avatar);
+		} else {
+			const fallback = document.createElement("span");
+			fallback.className = "track__avatar-fallback";
+			fallback.textContent = requesterName.slice(0, 1).toUpperCase();
+			requester.append(fallback);
+		}
+		const username = document.createElement("span");
+		username.className = "track__username";
+		username.textContent = request.requesterLogin ? `@${request.requesterLogin}` : requesterName;
+		username.title = username.textContent;
+		requester.append(username);
+		details.append(requester);
+		const trackName = document.createElement("span");
+		trackName.className = "track__name";
+		trackName.textContent = request.trackName;
+		trackName.title = request.trackName;
+		details.append(trackName);
+		item.append(details);
+		const status = added ? "complete" : "not complete";
+		item.setAttribute("aria-label", request.requesterLogin
+			? `${request.trackName}, requested by @${request.requesterLogin}: ${status}`
+			: `${request.trackName}, requested by ${requesterName}: ${status}`);
 		item.dataset.completed = String(added);
 		fragment.append(item);
 	}
