@@ -1,0 +1,13 @@
+{
+  "port": 3000,
+  "baseUrl": "https://example.com/track-requests",
+  "twitch": {
+    "clientId": "your_twitch_client_id",
+    "clientSecret": "your_twitch_client_secret"
+  },
+  "httpApi": {
+    "token": "replace_with_a_random_token"
+  },
+  "channel": "your_twitch_channel",
+  "chatUser": ""
+}
