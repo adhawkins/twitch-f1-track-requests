@@ -5579,8 +5579,8 @@ function explicitlyAborted(x, startIndex = 0) {
 }
 function prefixIssues(path5, issues) {
   return issues.map((iss) => {
-    var _a9;
-    (_a9 = iss).path ?? (_a9.path = []);
+    var _a8;
+    (_a8 = iss).path ?? (_a8.path = []);
     iss.path.unshift(path5);
     return iss;
   });
@@ -5601,17 +5601,17 @@ function sizeCaps(defChecks) {
   return caps;
 }
 function attachSchema(issues, start, inst) {
-  var _a9;
+  var _a8;
   for (let i = start; i < issues.length; i++) {
-    (_a9 = issues[i]).schema ?? (_a9.schema = inst);
+    (_a8 = issues[i]).schema ?? (_a8.schema = inst);
   }
 }
 function finalizeIssue(iss, ctx, config2) {
-  var _a9;
+  var _a8;
   const traits = iss.inst?._zod?.traits;
   if (traits?.has("$ZodType")) {
     if (traits.has("$ZodCheck"))
-      (_a9 = iss).schema ?? (_a9.schema = iss.inst);
+      (_a8 = iss).schema ?? (_a8.schema = iss.inst);
     else
       iss.schema = iss.inst;
   }
@@ -6092,7 +6092,7 @@ function formatError(error62, mapper = (issue2) => issue2.message) {
 function treeifyError(error62, mapper = (issue2) => issue2.message) {
   const result = { errors: [] };
   const processError = (error63, path5 = []) => {
-    var _a9;
+    var _a8;
     for (const issue2 of error63.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
         issue2.errors.map((issues) => processError({ issues }, [...path5, ...issue2.path]));
@@ -6124,7 +6124,7 @@ function treeifyError(error62, mapper = (issue2) => issue2.message) {
             curr = curr.properties[el];
           } else {
             curr.items ?? (curr.items = []);
-            (_a9 = curr.items)[el] ?? (_a9[el] = { errors: [] });
+            (_a8 = curr.items)[el] ?? (_a8[el] = { errors: [] });
             curr = curr.items[el];
           }
           if (terminal) {
@@ -6501,10 +6501,10 @@ var sha512_base64url = /* @__PURE__ */ fixedBase64url(86);
 
 // node_modules/zod/v4/core/checks.js
 var $ZodCheck = /* @__PURE__ */ $constructor("$ZodCheck", (inst, def) => {
-  var _a9;
+  var _a8;
   inst._zod ?? (inst._zod = {});
   inst._zod.def = def;
-  (_a9 = inst._zod).onattach ?? (_a9.onattach = []);
+  (_a8 = inst._zod).onattach ?? (_a8.onattach = []);
 });
 var _whenHasSize = (payload) => {
   const val = payload.value;
@@ -6677,9 +6677,9 @@ var $ZodCheckBigIntFormat = /* @__PURE__ */ $constructor("$ZodCheckBigIntFormat"
   };
 });
 var $ZodCheckMaxSize = /* @__PURE__ */ $constructor("$ZodCheckMaxSize", (inst, def) => {
-  var _a9;
+  var _a8;
   $ZodCheck.init(inst, def);
-  (_a9 = inst._zod.def).when ?? (_a9.when = _whenHasSize);
+  (_a8 = inst._zod.def).when ?? (_a8.when = _whenHasSize);
   inst._zod.check = (payload) => {
     const input2 = payload.value;
     const size = input2.size;
@@ -6697,9 +6697,9 @@ var $ZodCheckMaxSize = /* @__PURE__ */ $constructor("$ZodCheckMaxSize", (inst, d
   };
 });
 var $ZodCheckMinSize = /* @__PURE__ */ $constructor("$ZodCheckMinSize", (inst, def) => {
-  var _a9;
+  var _a8;
   $ZodCheck.init(inst, def);
-  (_a9 = inst._zod.def).when ?? (_a9.when = _whenHasSize);
+  (_a8 = inst._zod.def).when ?? (_a8.when = _whenHasSize);
   inst._zod.check = (payload) => {
     const input2 = payload.value;
     const size = input2.size;
@@ -6717,9 +6717,9 @@ var $ZodCheckMinSize = /* @__PURE__ */ $constructor("$ZodCheckMinSize", (inst, d
   };
 });
 var $ZodCheckSizeEquals = /* @__PURE__ */ $constructor("$ZodCheckSizeEquals", (inst, def) => {
-  var _a9;
+  var _a8;
   $ZodCheck.init(inst, def);
-  (_a9 = inst._zod.def).when ?? (_a9.when = _whenHasSize);
+  (_a8 = inst._zod.def).when ?? (_a8.when = _whenHasSize);
   inst._zod.check = (payload) => {
     const input2 = payload.value;
     const size = input2.size;
@@ -6738,9 +6738,9 @@ var $ZodCheckSizeEquals = /* @__PURE__ */ $constructor("$ZodCheckSizeEquals", (i
   };
 });
 var $ZodCheckMaxLength = /* @__PURE__ */ $constructor("$ZodCheckMaxLength", (inst, def) => {
-  var _a9;
+  var _a8;
   $ZodCheck.init(inst, def);
-  (_a9 = inst._zod.def).when ?? (_a9.when = _whenHasLength);
+  (_a8 = inst._zod.def).when ?? (_a8.when = _whenHasLength);
   inst._zod.check = (payload) => {
     const input2 = payload.value;
     const units = input2.length;
@@ -6760,9 +6760,9 @@ var $ZodCheckMaxLength = /* @__PURE__ */ $constructor("$ZodCheckMaxLength", (ins
   };
 });
 var $ZodCheckMinLength = /* @__PURE__ */ $constructor("$ZodCheckMinLength", (inst, def) => {
-  var _a9;
+  var _a8;
   $ZodCheck.init(inst, def);
-  (_a9 = inst._zod.def).when ?? (_a9.when = _whenHasLength);
+  (_a8 = inst._zod.def).when ?? (_a8.when = _whenHasLength);
   inst._zod.check = (payload) => {
     const input2 = payload.value;
     const units = input2.length;
@@ -6782,9 +6782,9 @@ var $ZodCheckMinLength = /* @__PURE__ */ $constructor("$ZodCheckMinLength", (ins
   };
 });
 var $ZodCheckLengthEquals = /* @__PURE__ */ $constructor("$ZodCheckLengthEquals", (inst, def) => {
-  var _a9;
+  var _a8;
   $ZodCheck.init(inst, def);
-  (_a9 = inst._zod.def).when ?? (_a9.when = _whenHasLength);
+  (_a8 = inst._zod.def).when ?? (_a8.when = _whenHasLength);
   inst._zod.check = (payload) => {
     const input2 = payload.value;
     const units = input2.length;
@@ -6805,10 +6805,10 @@ var $ZodCheckLengthEquals = /* @__PURE__ */ $constructor("$ZodCheckLengthEquals"
   };
 });
 var $ZodCheckStringFormat = /* @__PURE__ */ $constructor("$ZodCheckStringFormat", (inst, def) => {
-  var _a9, _b;
+  var _a8, _b;
   $ZodCheck.init(inst, def);
   if (def.pattern)
-    (_a9 = inst._zod).check ?? (_a9.check = (payload) => {
+    (_a8 = inst._zod).check ?? (_a8.check = (payload) => {
       def.pattern.lastIndex = 0;
       if (def.pattern.test(payload.value))
         return;
@@ -7025,7 +7025,7 @@ var version = {
 
 // node_modules/zod/v4/core/schemas.js
 var $ZodType = /* @__PURE__ */ $constructor("$ZodType", (inst, def) => {
-  var _a9;
+  var _a8;
   inst ?? (inst = {});
   inst._zod.def = def;
   inst._zod.bag = inst._zod.bag || {};
@@ -7038,7 +7038,7 @@ var $ZodType = /* @__PURE__ */ $constructor("$ZodType", (inst, def) => {
     }
   }
   if (checks.length === 0) {
-    (_a9 = inst._zod).deferred ?? (_a9.deferred = []);
+    (_a8 = inst._zod).deferred ?? (_a8.deferred = []);
     inst._zod.deferred?.push(() => {
       inst._zod.run = inst._zod.parse;
     });
@@ -9646,8 +9646,8 @@ var memo = {
     return empty;
   },
   guard(inst) {
-    var _a9;
-    (_a9 = inst._zod).deferred ?? (_a9.deferred = []);
+    var _a8;
+    (_a8 = inst._zod).deferred ?? (_a8.deferred = []);
     inst._zod.deferred.push(() => {
       const base = inst._zod.parse;
       const wrapped = (payload, ctx) => {
@@ -9661,12 +9661,12 @@ var memo = {
     });
   },
   attach(inst) {
-    var _a9;
+    var _a8;
     let isRecursiveInst;
     let rechecked = false;
     let lastCtx;
     let lastBucket;
-    (_a9 = inst._zod).deferred ?? (_a9.deferred = []);
+    (_a8 = inst._zod).deferred ?? (_a8.deferred = []);
     inst._zod.deferred.push(() => {
       const base = inst._zod.parse;
       const wrapped = (payload, ctx) => {
@@ -20074,7 +20074,7 @@ function handleUnrepresentable(schema, ctx, json2, params, message) {
   return true;
 }
 function processSchema(schema, ctx, _params = { path: [], schemaPath: [] }) {
-  var _a9;
+  var _a8;
   const def = schema._zod.def;
   const seen = ctx.seen.get(schema);
   if (seen) {
@@ -20124,7 +20124,7 @@ function processSchema(schema, ctx, _params = { path: [], schemaPath: [] }) {
     delete result.schema.default;
   }
   if (ctx.io === "input" && "_prefault" in result.schema)
-    (_a9 = result.schema).default ?? (_a9.default = result.schema._prefault);
+    (_a8 = result.schema).default ?? (_a8.default = result.schema._prefault);
   delete result.schema._prefault;
   const _result = ctx.seen.get(schema);
   return _result.schema;
@@ -24896,7 +24896,7 @@ var ApiConnection = class {
       this.scheduleReconnect(generation);
     });
   }
-  command(action2, token, requestId) {
+  command(action2, token) {
     const socket = this.socket;
     if (!socket || socket.readyState !== wrapper_default.OPEN) {
       return Promise.reject(new Error("The HTTP API WebSocket is not connected."));
@@ -24906,8 +24906,7 @@ var ApiConnection = class {
       type: "command",
       commandId,
       action: action2,
-      token,
-      ...requestId ? { requestId } : {}
+      token
     };
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
@@ -25080,26 +25079,10 @@ var CompleteNextAction = class extends (_a7 = SingletonAction) {
 _init5 = __decoratorStart(_a7);
 CompleteNextAction = __decorateElement(_init5, 0, "CompleteNextAction", _CompleteNextAction_decorators, CompleteNextAction);
 __runInitializers(_init5, 1, CompleteNextAction);
-var _CompleteRequestAction_decorators, _init6, _a8;
-_CompleteRequestAction_decorators = [action({ UUID: `${pluginUuid}.complete-request` })];
-var CompleteRequestAction = class extends (_a8 = SingletonAction) {
-  async onKeyDown(ev) {
-    const requestId = ev.payload.settings.requestId?.trim();
-    if (!requestId || !/^[0-9a-f-]{36}$/i.test(requestId)) {
-      plugin_default.logger.warn("Complete request action needs a valid request ID.");
-      await ev.action.showAlert();
-      return;
-    }
-    await postAction(ev, "complete-request", "Complete request action failed", requestId);
-  }
-};
-_init6 = __decoratorStart(_a8);
-CompleteRequestAction = __decorateElement(_init6, 0, "CompleteRequestAction", _CompleteRequestAction_decorators, CompleteRequestAction);
-__runInitializers(_init6, 1, CompleteRequestAction);
-async function postAction(ev, command, errorLabel, requestId) {
+async function postAction(ev, command, errorLabel) {
   try {
     const settings2 = await plugin_default.settings.getGlobalSettings();
-    await apiConnection.command(command, requireToken(settings2), requestId);
+    await apiConnection.command(command, requireToken(settings2));
     await ev.action.showOk();
   } catch (error62) {
     plugin_default.logger.error(errorLabel, error62);
@@ -25119,7 +25102,6 @@ plugin_default.actions.registerAction(newRequestsAction);
 plugin_default.actions.registerAction(new ResetTracksAction());
 plugin_default.actions.registerAction(new AllowNewRequestsAction());
 plugin_default.actions.registerAction(new CompleteNextAction());
-plugin_default.actions.registerAction(new CompleteRequestAction());
 plugin_default.settings.onDidReceiveGlobalSettings(async (ev) => {
   apiConnection.configure(ev.settings);
 });

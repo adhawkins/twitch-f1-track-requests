@@ -6,8 +6,18 @@
 	<title>F1 Track Requests settings</title>
 	<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
 	<style>
-		body { padding: 12px; }
-		input { box-sizing: border-box; width: 100%; }
+		body { padding: 12px; color-scheme: dark; }
+		input {
+			box-sizing: border-box;
+			width: 100%;
+			padding: 6px 8px;
+			border: 1px solid #555;
+			border-radius: 2px;
+			background: #3d3d3d;
+			color: #f0f0f0;
+		}
+		input::placeholder { color: #999; }
+		input:focus { border-color: #888; outline: none; }
 		#status { min-height: 1.4em; color: #aaa; }
 	</style>
 </head>
@@ -17,9 +27,6 @@
 	</sdpi-item>
 	<sdpi-item label="HTTP API token">
 		<input id="token" type="password" autocomplete="off" placeholder="At least 32 characters">
-	</sdpi-item>
-	<sdpi-item label="Request ID">
-		<sdpi-textfield setting="requestId" placeholder="UUID (Complete Request only)"></sdpi-textfield>
 	</sdpi-item>
 	<p id="status" role="status"></p>
 	<script>

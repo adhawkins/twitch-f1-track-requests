@@ -53,15 +53,6 @@
       "PropertyInspectorPath": "ui/configuration.html",
       "States": [{ "Image": "imgs/complete-next", "Title": "", "TitleAlignment": "bottom", "ShowTitle": false }],
       "UUID": "com.gently.f1-track-requests.complete-next"
-    },
-    {
-      "Icon": "imgs/action",
-      "Name": "Complete Request",
-      "Controllers": ["Keypad"],
-      "Tooltip": "Mark a request complete by its request ID.",
-      "PropertyInspectorPath": "ui/configuration.html",
-      "States": [{ "Image": "imgs/button", "Title": "COMPLETE REQUEST" }],
-      "UUID": "com.gently.f1-track-requests.complete-request"
     }
   ],
   "Author": "F1 Track Requests",
@@ -79,5 +70,5 @@
   "SDKVersion": 2,
   "Software": { "MinimumVersion": "7.1" },
   "UUID": "com.gently.f1-track-requests",
-  "Version": "1.0.0.18"
+  "Version": "1.0.0.20"
 }

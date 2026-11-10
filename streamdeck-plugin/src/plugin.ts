@@ -18,10 +18,6 @@ type GlobalSettings = {
 	token?: string;
 };
 
-type ActionSettings = {
-	requestId?: string;
-};
-
 type ApiState = {
 	trackSelectionEnabled: boolean;
 	requestsEnabled: boolean;
@@ -154,7 +150,7 @@ class ApiConnection {
 		});
 	}
 
-	command(action: string, token: string, requestId?: string): Promise<void> {
+	command(action: string, token: string): Promise<void> {
 		const socket = this.socket;
 		if (!socket || socket.readyState !== WebSocket.OPEN) {
 			return Promise.reject(new Error("The HTTP API WebSocket is not connected."));
@@ -166,7 +162,6 @@ class ApiConnection {
 			commandId,
 			action,
 			token,
-			...(requestId ? { requestId } : {}),
 		};
 		return new Promise((resolve, reject) => {
 			const timer = setTimeout(() => {
@@ -356,28 +351,14 @@ class CompleteNextAction extends SingletonAction<GlobalSettings> {
 	}
 }
 
-@action({ UUID: `${pluginUuid}.complete-request` })
-class CompleteRequestAction extends SingletonAction<GlobalSettings & ActionSettings> {
-	override async onKeyDown(ev: KeyDownEvent<GlobalSettings & ActionSettings>): Promise<void> {
-		const requestId = ev.payload.settings.requestId?.trim();
-		if (!requestId || !/^[0-9a-f-]{36}$/i.test(requestId)) {
-			streamDeck.logger.warn("Complete request action needs a valid request ID.");
-			await ev.action.showAlert();
-			return;
-		}
-		await postAction(ev, "complete-request", "Complete request action failed", requestId);
-	}
-}
-
 async function postAction(
 	ev: KeyDownEvent<GlobalSettings>,
 	command: string,
 	errorLabel: string,
-	requestId?: string,
 ): Promise<void> {
 	try {
 		const settings = await streamDeck.settings.getGlobalSettings<GlobalSettings>();
-		await apiConnection.command(command, requireToken(settings), requestId);
+		await apiConnection.command(command, requireToken(settings));
 		await ev.action.showOk();
 	} catch (error) {
 		streamDeck.logger.error(errorLabel, error);
@@ -400,7 +381,6 @@ streamDeck.actions.registerAction(newRequestsAction);
 streamDeck.actions.registerAction(new ResetTracksAction());
 streamDeck.actions.registerAction(new AllowNewRequestsAction());
 streamDeck.actions.registerAction(new CompleteNextAction());
-streamDeck.actions.registerAction(new CompleteRequestAction());
 
 streamDeck.settings.onDidReceiveGlobalSettings(async ev => {
 	apiConnection.configure(ev.settings as GlobalSettings);
