@@ -68,6 +68,46 @@ To enable browser diagnostics, add the `verbose` query parameter to the page
 URL, for example `https://trackrequests.gently.org.uk:7000/?verbose`, then check
 the browser developer console. Remove the parameter to disable browser logs.
 
+### systemd user service
+
+The supplied service file assumes the repository is located at
+`~/software/twitch-f1-track-requests`. Install it as a user service and enable
+it to start now and on future logins:
+
+```sh
+mkdir -p ~/.config/systemd/user
+cp ~/software/twitch-f1-track-requests/server/f1-track-requests.service \
+  ~/.config/systemd/user/f1-track-requests.service
+systemctl --user daemon-reload
+systemctl --user enable --now f1-track-requests.service
+```
+
+The unit optionally reads command-line arguments from
+`~/software/twitch-f1-track-requests/server/f1-track-requests.env`—the file
+belongs in the repository's `server` directory, not beside the installed unit.
+Create it there if you need extra arguments, for example:
+
+```ini
+EXTRA_ARGS=--verbose
+```
+
+The environment file is optional and ignored by Git. After changing it, restart
+the service:
+
+```sh
+systemctl --user restart f1-track-requests.service
+```
+
+Check service status and logs with:
+
+```sh
+systemctl --user status f1-track-requests.service
+journalctl --user -u f1-track-requests.service
+```
+
+If the repository is in a different location, edit `WorkingDirectory` and
+`EnvironmentFile` in the installed unit to match.
+
 ### Traefik routing
 
 Configure a TLS-enabled Traefik entrypoint listening on `:7000`, then route the
