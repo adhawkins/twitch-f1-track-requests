@@ -16,10 +16,10 @@
     },
     {
       "Icon": "imgs/action",
-      "Name": "Toggle New Requests",
+      "Name": "Toggle Requests Closed",
       "Controllers": ["Keypad"],
       "DisableAutomaticStates": true,
-      "Tooltip": "Shows whether new requests are enabled. Press to toggle them.",
+      "Tooltip": "Shows whether the request queue is closed. Press to toggle it.",
       "PropertyInspectorPath": "ui/configuration.html",
       "States": [
         { "Image": "imgs/requests-enabled", "Title": "", "TitleAlignment": "bottom", "ShowTitle": false },
@@ -79,5 +79,5 @@
   "SDKVersion": 2,
   "Software": { "MinimumVersion": "7.1" },
   "UUID": "com.gently.f1-track-requests",
-  "Version": "1.0.0.16"
+  "Version": "1.0.0.18"
 }

@@ -4,6 +4,6 @@
   <path d="M30 21h12" fill="none" stroke="#c93636" stroke-linecap="round" stroke-width="3.5"/>
   <g fill="#fff" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">
     <text x="36" y="47" transform="translate(36 0) scale(0.76643 1) translate(-36 0)">Requests</text>
-    <text x="36" y="64" transform="translate(36 0) scale(0.8337 1) translate(-36 0)">Disabled</text>
+    <text x="36" y="64" transform="translate(36 0) scale(0.8337 1) translate(-36 0)">Closed</text>
   </g>
 </svg>
