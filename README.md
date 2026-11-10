@@ -309,6 +309,8 @@ that WebSocket and require the configured `httpApi.token`; it is not needed to
 connect or receive updates. The web interface uses the same WebSocket to
 receive user-specific state and live queue updates.
 
+### Building and packaging
+
 Build the server and Stream Deck installer with CMake 3.20 or later, Node.js,
 npm, and the dependencies declared in the package lockfiles. The Stream Deck
 plugin installs Elgato's CLI locally and uses it to validate and package the
@@ -322,16 +324,21 @@ cmake --build build
 The build stages a runnable server in `build/server` and creates the installer
 in `build/streamdeck-plugin/` (named
 `com.gently.f1-track-requests.streamDeckPlugin`). To install both build products
-under a chosen prefix, run:
+as a single tarball, run:
 
 ```sh
-cmake --install build --prefix dist
+cmake --build build --target package
 ```
 
-The server is installed under `dist/server`; copy `config.json-example` to
-`config.json` there and configure it before starting the server. Open the
-`.streamDeckPlugin` installer with Stream Deck to install the plugin. It
-requires Stream Deck 7.1 or later.
+This creates `build/f1-track-requests-1.0.0.tar.gz`. It contains the runnable
+server under `server/` and the Stream Deck installer at the archive root.
+Extract it to the desired distribution directory, then copy `server/config.json-example`
+to `server/config.json` and configure it before starting the server. Open the
+included `.streamDeckPlugin` installer with Stream Deck to install the plugin;
+it requires Stream Deck 7.1 or later. To install the same contents directly
+under a prefix without making a tarball, run `cmake --install build --prefix dist`.
+
+### Configuring the Stream Deck plugin
 
 Select any plugin action and configure the HTTP API server URL (for example
 `https://trackrequests.example.com`) and the same 32-character-or-longer token
