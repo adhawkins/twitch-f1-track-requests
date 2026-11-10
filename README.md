@@ -108,6 +108,57 @@ journalctl --user -u f1-track-requests.service
 If the repository is in a different location, edit `WorkingDirectory` and
 `EnvironmentFile` in the installed unit to match.
 
+### Running the installed `dist` server with systemd
+
+The server distribution includes this README, the service unit, and
+`f1-track-requests.env-example`. After installing with
+`cmake --install build --prefix "$HOME/software/twitch-f1-track-requests/dist"`,
+configure the server:
+
+```sh
+cp "$HOME/software/twitch-f1-track-requests/dist/server/config.json-example" \
+  "$HOME/software/twitch-f1-track-requests/dist/server/config.json"
+```
+
+If you want to supply extra command-line arguments, copy the example
+environment file:
+
+```sh
+cp "$HOME/software/twitch-f1-track-requests/dist/server/f1-track-requests.env-example" \
+  "$HOME/software/twitch-f1-track-requests/dist/server/f1-track-requests.env"
+```
+
+Edit `f1-track-requests.service` in `dist/server` before linking it. Set
+`WorkingDirectory` to the installed server directory. If you copied the
+environment example, also change `EnvironmentFile` to point to that file. For
+the prefix above, use:
+
+```ini
+WorkingDirectory=%h/software/twitch-f1-track-requests/dist/server
+EnvironmentFile=-%h/software/twitch-f1-track-requests/dist/server/f1-track-requests.env
+```
+
+Use the corresponding absolute path for any other install prefix. The
+environment-file path is not resolved relative to the symlink or unit file.
+If you do not need an environment file, you can leave that setting unchanged:
+its leading `-` makes a missing file optional. If you copied the example,
+uncomment `EXTRA_ARGS=--verbose` only when verbose logging is wanted.
+
+Link the distributed unit into the user's systemd configuration, then reload
+and enable it:
+
+```sh
+mkdir -p ~/.config/systemd/user
+ln -s "$HOME/software/twitch-f1-track-requests/dist/server/f1-track-requests.service" \
+  ~/.config/systemd/user/f1-track-requests.service
+systemctl --user daemon-reload
+systemctl --user enable --now f1-track-requests.service
+```
+
+The unit runs `server.js` from the installed `dist/server` directory. After
+changing the unit or environment file, restart the service with
+`systemctl --user restart f1-track-requests.service`.
+
 ### Traefik routing
 
 Configure a TLS-enabled Traefik entrypoint listening on `:7000`, then route the

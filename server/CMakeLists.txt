@@ -7,11 +7,14 @@ set(SERVER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/dock.css"
     "${CMAKE_CURRENT_SOURCE_DIR}/dock.html"
     "${CMAKE_CURRENT_SOURCE_DIR}/dock.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/f1-track-requests.env-example"
+    "${CMAKE_CURRENT_SOURCE_DIR}/f1-track-requests.service"
     "${CMAKE_CURRENT_SOURCE_DIR}/index.html"
     "${CMAKE_CURRENT_SOURCE_DIR}/package-lock.json"
     "${CMAKE_CURRENT_SOURCE_DIR}/package.json"
     "${CMAKE_CURRENT_SOURCE_DIR}/server.js"
     "${CMAKE_CURRENT_SOURCE_DIR}/styles.css"
+    "${PROJECT_SOURCE_DIR}/README.md"
 )
 
 set(SERVER_STAMP "${SERVER_BUILD_DIR}/.built")
