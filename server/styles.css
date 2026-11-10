@@ -220,6 +220,19 @@ h1 span {
 	font-size: 14px;
 }
 
+.request-state {
+	margin: -2px 0 14px;
+	color: #f23448;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.request-state[hidden] {
+	display: none;
+}
+
 .notice {
 	display: none;
 	margin-bottom: 16px;

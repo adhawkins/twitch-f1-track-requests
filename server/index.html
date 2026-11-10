@@ -30,6 +30,7 @@
 			<p class="eyebrow">THE RACE QUEUE</p>
 			<h1>Pick the next <span>circuit.</span></h1>
 			<p class="subtitle">One request per viewer. Channel moderators can request multiple circuits.</p>
+			<p id="request-state" class="request-state" hidden></p>
 		</section>
 
 		<div id="notice" class="notice" role="status" aria-live="polite"></div>
@@ -42,9 +43,6 @@
 						<h2 id="request-heading">Request a track</h2>
 					</div>
 				</div>
-				<p id="requests-disabled-message" class="request-disabled-message" role="status" aria-live="polite" hidden>
-					New track requests are currently disabled by a moderator.
-				</p>
 				<p id="request-help" class="muted">Sign in with Twitch to join the queue.</p>
 				<form id="request-form">
 					<label for="track-select">Available circuits</label>

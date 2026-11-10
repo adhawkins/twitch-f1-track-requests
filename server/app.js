@@ -13,7 +13,7 @@ const recentChatterSelect = document.querySelector("#recent-chatter-select");
 const assignmentHelp = document.querySelector("#assignment-help");
 const requestButton = document.querySelector("#request-button");
 const requestHelp = document.querySelector("#request-help");
-const requestsDisabledMessage = document.querySelector("#requests-disabled-message");
+const requestState = document.querySelector("#request-state");
 const requestList = document.querySelector("#request-list");
 const emptyState = document.querySelector("#empty-state");
 const queueCount = document.querySelector("#queue-count");
@@ -256,8 +256,19 @@ function renderRequestForm() {
 	const assignmentNeedsChatter = state.isModerator && assignTrackCheckbox.checked;
 	const assignedUserSelected = !assignmentNeedsChatter || Boolean(recentChatterSelect.value);
 	const availableOptionCount = [...select.options].filter(option => option.value && !option.disabled).length;
+	requestState.hidden = true;
+	requestState.textContent = "";
+	if (!state.trackSelectionEnabled) {
+		requestState.textContent = "Track selection is only available during F1 Open Lobby Streams.";
+		requestState.hidden = false;
+	} else if (!state.requestsEnabled) {
+		requestState.textContent = "Not accepting any more track requests.";
+		requestState.hidden = false;
+	} else if (requestLimitReached) {
+		requestState.textContent = "You have already selected a track. A moderator can allow new requests.";
+		requestState.hidden = false;
+	}
 	form.hidden = !state.trackSelectionEnabled;
-	requestsDisabledMessage.hidden = state.requestsEnabled;
 	select.disabled = !canRequest || busy;
 	assignTrackCheckbox.disabled = busy;
 	recentChatterSelect.disabled = !state.isModerator || !assignTrackCheckbox.checked || !(state.recentChatters || []).length || busy;
@@ -279,9 +290,7 @@ function renderRequestForm() {
 		selectDisabled: select.disabled,
 		requestButtonDisabled: requestButton.disabled,
 	});
-	if (!state.trackSelectionEnabled) requestHelp.textContent = "Track selection is currently disabled by a moderator.";
-	else if (!loggedIn) requestHelp.textContent = "Sign in with Twitch to join the queue.";
-	else if (requestLimitReached) requestHelp.textContent = "You have already made a request. A moderator can allow new requests.";
+	if (!loggedIn) requestHelp.textContent = "Sign in with Twitch to join the queue.";
 	else if (noMoreTracks) requestHelp.textContent = "Every available circuit has already been requested.";
 	else if (state.isModerator) requestHelp.textContent = "As a channel moderator, you can request multiple circuits.";
 	else requestHelp.textContent = "Choose any available circuit. You can make one request.";
@@ -345,7 +354,7 @@ function renderModeratorTools() {
 					: "Track selection enabled.",
 			},
 			{
-				label: state.requestsEnabled ? "Disable requests" : "Enable requests",
+				label: state.requestsEnabled ? "Close request queue" : "Open request queue",
 				className: state.requestsEnabled
 					? "button button-danger button-small"
 					: "button button-outline button-small",
