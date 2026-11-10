@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
+  <rect width="72" height="72" rx="12" fill="#344b72"/>
+  <path d="M24 10h24v3H24zm0 7h24v3H24zm0 7h16v3H24z" fill="#fff"/>
+  <g fill="#fff" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">
+    <text x="36" y="46">Reset</text>
+    <text x="36" y="63">Tracks</text>
+  </g>
+</svg>

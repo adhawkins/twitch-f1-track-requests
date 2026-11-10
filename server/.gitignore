@@ -1,0 +1,5 @@
+.track-request-auth.json
+.track-request-auth.json.*.tmp
+/node_modules/
+config.json
+f1-track-requests.env
