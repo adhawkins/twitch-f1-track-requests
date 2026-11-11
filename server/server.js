@@ -5,6 +5,8 @@ const path = require("node:path");
 const WebSocket = require("ws");
 
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, "config.json"), "utf8"));
+const configuredVersion = "@PROJECT_VERSION@";
+const appVersion = configuredVersion.startsWith("@") ? "dev" : configuredVersion;
 const tracks = [
 	{ id: "albert-park", name: "Australia", countryCode: "AU" },
 	{ id: "shanghai", name: "China", countryCode: "CN" },
@@ -1681,6 +1683,9 @@ async function getState(request) {
 }
 
 async function handleApi(request, response, url) {
+	if (request.method === "GET" && url.pathname === "/api/version") {
+		return sendJson(response, 200, { version: appVersion });
+	}
 	if (request.method === "GET" && url.pathname === "/api/state") {
 		return sendJson(response, 200, await getState(request));
 	}

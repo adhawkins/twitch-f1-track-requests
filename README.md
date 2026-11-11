@@ -346,7 +346,9 @@ cmake --build build --target package
 ```
 
 This creates `build/f1-track-requests-1.0.0.tar.gz`. It contains the runnable
-server under `server/` and the Stream Deck installer at the archive root.
+server under `server/` and the Stream Deck installer at the archive root. The
+server embeds the top-level CMake project version in `server.js` and displays
+it in the web interface footer.
 Extract it to the desired distribution directory, then copy `server/config.json-example`
 to `server/config.json` and configure it before starting the server. Open the
 included `.streamDeckPlugin` installer with Stream Deck to install the plugin;
