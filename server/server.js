@@ -1163,7 +1163,7 @@ async function handleChatMessage(tags, username, message) {
 	}
 	if (!name) {
 		const helpMessages = [
-			`Track requests: ${baseUrl}`,
+			`Track requests: ${baseUrl} (version ${appVersion})`,
 			"!track <track name> - request a track.",
 			"!track <track name> @username - request a track for a recent chatter (moderators only).",
 			"!tracks - list the configured tracks.",
