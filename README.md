@@ -321,6 +321,21 @@ cmake -S . -B build
 cmake --build build
 ```
 
+The Stream Deck manifest version is composed from the top-level CMake project
+version and `PLUGIN_BUILD_VERSION` (currently `20`). Change the final component
+by editing `PLUGIN_BUILD_VERSION` in `streamdeck-plugin/CMakeLists.txt`:
+
+```cmake
+set(PLUGIN_BUILD_VERSION "21")
+```
+
+The source `manifest.json` keeps its default version for direct source-tree
+copies. CMake generates a manifest with the configured version at
+`build/streamdeck-plugin/generated/com.gently.f1-track-requests.sdPlugin/manifest.json`.
+For a manual plugin-directory install, use the built plugin directory at
+`build/streamdeck-plugin/package/com.gently.f1-track-requests.sdPlugin/`, which
+contains the configured manifest.
+
 The build stages a runnable server in `build/server` and creates the installer
 in `build/streamdeck-plugin/` (named
 `com.gently.f1-track-requests.streamDeckPlugin`). To install both build products
