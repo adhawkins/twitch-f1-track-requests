@@ -244,13 +244,6 @@ send these help messages; the account must also meet Twitch's whisper
 requirements. Viewers can request a track with:
 
 ```
-
-To troubleshoot a missing help whisper, run the server with `--verbose` and
-check for `chat.command_help.requested`, `chat.command_help.whisper.started`,
-and `chat.command_help.whisper.api_accepted` in the server logs. Whisper API
-errors are logged even without verbose mode. An API-accepted whisper is not
-proof of delivery; Twitch may silently drop whispers or users may block
-whispers from strangers.text
 !track <track name>
 !added <track name>
 !tracks
@@ -261,6 +254,13 @@ whispers from strangers.text
 !requestsdisable
 !requestsenable
 ```
+
+To troubleshoot a missing help whisper, run the server with `--verbose` and
+check for `chat.command_help.requested`, `chat.command_help.whisper.started`,
+and `chat.command_help.whisper.api_accepted` in the server logs. Whisper API
+errors are logged even without verbose mode. An API-accepted whisper is not
+proof of delivery; Twitch may silently drop whispers or users may block
+whispers from strangers.
 
 `!tracksclear` clears the track list and resets request limits.
 `!tracksnewrequests` resets request limits while keeping the current track list.
