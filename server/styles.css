@@ -556,6 +556,11 @@ select:disabled {
 	font-size: 11px;
 }
 
+#app-version {
+	margin-left: 8px;
+	color: #84848e;
+}
+
 @media (max-width: 760px) {
 	.content-grid {
 		grid-template-columns: 1fr;

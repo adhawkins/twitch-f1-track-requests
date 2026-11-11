@@ -19,6 +19,7 @@ const emptyState = document.querySelector("#empty-state");
 const queueCount = document.querySelector("#queue-count");
 const moderatorTools = document.querySelector("#moderator-tools");
 const notice = document.querySelector("#notice");
+const appVersion = document.querySelector("#app-version");
 const verbose = new URLSearchParams(window.location.search).has("verbose");
 let state;
 let busy = false;
@@ -33,6 +34,13 @@ log("page.loaded", {
 	userAgent: navigator.userAgent,
 	language: navigator.language,
 	online: navigator.onLine,
+});
+
+api("/api/version").then(result => {
+	appVersion.textContent = `Version ${result.version}`;
+}).catch(error => {
+	log("version.load.failed", { name: error.name, message: error.message });
+	appVersion.textContent = "Version unavailable";
 });
 
 function showNotice(message, isError = false) {
