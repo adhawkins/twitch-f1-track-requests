@@ -306,7 +306,8 @@ function renderRequestForm() {
 
 function renderModeratorTools() {
 	moderatorTools.replaceChildren();
-	if (state.separateChatAccount && (!state.streamerConnected || !state.chatBotGrantReady)) {
+	if (state.chatEnabled && state.separateChatAccount
+		&& (!state.streamerConnected || !state.chatBotGrantReady)) {
 		const connect = element(
 			"a",
 			"button button-outline button-small",

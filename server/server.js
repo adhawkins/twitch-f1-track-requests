@@ -241,6 +241,11 @@ function validateConfig() {
 	if (!Number.isInteger(config.port) || config.port < 1 || config.port > 65535) {
 		throw new Error("Set port in track-requests/config.json to a port between 1 and 65535.");
 	}
+	if (config.chat !== undefined && (!config.chat || typeof config.chat !== "object"
+		|| Array.isArray(config.chat) || (config.chat.enabled !== undefined
+			&& typeof config.chat.enabled !== "boolean"))) {
+		throw new Error("Set config.chat.enabled to true or false.");
+	}
 	if (typeof config.channel !== "string" || !/^[a-zA-Z0-9_]{1,25}$/.test(config.channel)
 		|| config.channel.toLowerCase() === "your_twitch_channel") {
 		throw new Error("Set config.channel to the Twitch channel login in track-requests/config.json.");
@@ -281,6 +286,10 @@ function randomToken() {
 	return crypto.randomBytes(32).toString("base64url");
 }
 
+function isChatEnabled() {
+	return !config.chat || config.chat.enabled !== false;
+}
+
 function configuredChatUser() {
 	return (config.chatUser || "").trim().toLowerCase();
 }
@@ -294,6 +303,7 @@ function usesSeparateChatAccount() {
 }
 
 function getStreamerScopes() {
+	if (!isChatEnabled()) return ["moderation:read"];
 	return usesSeparateChatAccount()
 		? ["moderation:read", ...channelBotScopes]
 		: ["moderation:read", ...chatScopes, ...whisperScopes];
@@ -1370,6 +1380,11 @@ function handleEventSubMessage(socket, data, resuming) {
 }
 
 async function connectTwitchChat(url, resuming = false) {
+	if (!isChatEnabled()) {
+		chatConnectionState = "disabled";
+		chatConnected = false;
+		return;
+	}
 	if (!hasChatScopes() || !streamerAuthorization
 		|| (usesSeparateChatAccount() && !hasChannelBotScope())) {
 		chatConnectionState = getChatAuthorization() ? "needs-authorization" : "awaiting-authorization";
@@ -1419,7 +1434,7 @@ async function connectTwitchChat(url, resuming = false) {
 }
 
 function scheduleChatReconnect() {
-	if (chatReconnectTimer || !hasChatScopes() || !streamerAuthorization
+	if (!isChatEnabled() || chatReconnectTimer || !hasChatScopes() || !streamerAuthorization
 		|| (usesSeparateChatAccount() && !hasChannelBotScope())) return;
 	chatReconnectTimer = setTimeout(() => {
 		chatReconnectTimer = undefined;
@@ -1673,7 +1688,8 @@ async function getState(request) {
 		alreadyRequested,
 		recentChatters: moderator ? getRecentChatters() : [],
 		streamerConnected: Boolean(streamerAuthorization),
-		chatAuthorizationReady: hasChatScopes(),
+		chatEnabled: isChatEnabled(),
+		chatAuthorizationReady: isChatEnabled() && hasChatScopes(),
 		chatSenderLogin: chatUserLogin(),
 		separateChatAccount: usesSeparateChatAccount(),
 		chatBotGrantReady: !usesSeparateChatAccount() || hasChannelBotScope(),
@@ -1875,6 +1891,9 @@ async function handleRequest(request, response) {
 			const flow = url.searchParams.get("as") || "viewer";
 			if (flow !== "viewer" && flow !== "streamer" && flow !== "chat") {
 				throw new HttpError(400, "Unknown Twitch login type.");
+			}
+			if (flow === "chat" && !isChatEnabled()) {
+				throw new HttpError(403, "Twitch chat is disabled in this server's configuration.");
 			}
 			if (flow === "chat" && !usesSeparateChatAccount()) {
 				throw new HttpError(400, "Set config.chatUser to a different Twitch account before connecting a chat account.");
