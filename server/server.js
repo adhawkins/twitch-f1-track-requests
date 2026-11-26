@@ -221,12 +221,20 @@ let chatSendQueue = [];
 let chatSendTimer;
 let chatSendInProgress = false;
 let eventSubReconnectUrl;
+let eventSubKeepaliveTimer;
+let eventSubKeepaliveSocket;
+let eventSubKeepaliveTimeoutSeconds;
+let eventSubHasConnected = false;
 let whisperSendQueue = Promise.resolve();
 let lastWhisperSentAt = 0;
 
+function logAlways(event, details = {}) {
+	console.info("[track-requests]", JSON.stringify({ timestamp: new Date().toISOString(), event, ...details }));
+}
+
 function log(event, details = {}) {
 	if (!verbose) return;
-	console.info("[track-requests]", JSON.stringify({ timestamp: new Date().toISOString(), event, ...details }));
+	logAlways(event, details);
 }
 
 class HttpError extends Error {
@@ -1275,18 +1283,71 @@ async function createChatSubscription(sessionId) {
 	});
 }
 
+function clearEventSubKeepaliveTimeout(socket) {
+	if (!socket || eventSubKeepaliveSocket !== socket) return;
+	if (eventSubKeepaliveTimer) clearTimeout(eventSubKeepaliveTimer);
+	eventSubKeepaliveTimer = undefined;
+	eventSubKeepaliveSocket = undefined;
+	eventSubKeepaliveTimeoutSeconds = undefined;
+}
+
+function resetEventSubKeepaliveTimeout(socket) {
+	if (eventSubSocket !== socket || eventSubKeepaliveSocket !== socket
+		|| !eventSubKeepaliveTimeoutSeconds) return;
+	if (eventSubKeepaliveTimer) clearTimeout(eventSubKeepaliveTimer);
+	const timeoutSeconds = eventSubKeepaliveTimeoutSeconds;
+	eventSubKeepaliveTimer = setTimeout(() => {
+		if (eventSubSocket !== socket || eventSubKeepaliveSocket !== socket) return;
+		eventSubKeepaliveTimer = undefined;
+		logAlways("chat.eventsub.keepalive.timeout", {
+			channel: config.channel,
+			timeoutSeconds,
+			action: "terminating socket",
+		});
+		chatConnected = false;
+		if (chatConnectionState !== "needs-authorization") {
+			chatConnectionState = "disconnected";
+		}
+		eventSubReconnectUrl = undefined;
+		socket.terminate();
+	}, timeoutSeconds * 1000);
+	eventSubKeepaliveTimer.unref();
+}
+
+function startEventSubKeepaliveTimeout(socket, timeoutSeconds) {
+	clearEventSubKeepaliveTimeout(eventSubKeepaliveSocket);
+	eventSubKeepaliveSocket = socket;
+	eventSubKeepaliveTimeoutSeconds = timeoutSeconds;
+	resetEventSubKeepaliveTimeout(socket);
+}
+
 function processEventSubNotification(payload) {
 	const metadata = payload.metadata || {};
 	if (metadata.message_type === "session_welcome") {
-		const sessionId = payload.payload && payload.payload.session
-			&& payload.payload.session.id;
-		if (!payload.resuming && !sessionId) {
+		const session = payload.payload && payload.payload.session;
+		const sessionId = session && session.id;
+		const keepaliveTimeoutSeconds = session && session.keepalive_timeout_seconds;
+		if ((!payload.resuming && !sessionId)
+			|| !Number.isFinite(keepaliveTimeoutSeconds) || keepaliveTimeoutSeconds <= 0) {
 			chatConnected = false;
 			chatConnectionState = "disconnected";
-			log("chat.eventsub.invalid_welcome");
+			logAlways("chat.eventsub.invalid_welcome", {
+				hasSessionId: Boolean(sessionId),
+				keepaliveTimeoutSeconds: Number.isFinite(keepaliveTimeoutSeconds)
+					? keepaliveTimeoutSeconds
+					: null,
+			});
 			payload.socket.close();
 			return;
 		}
+		startEventSubKeepaliveTimeout(payload.socket, keepaliveTimeoutSeconds);
+		if (eventSubHasConnected) {
+			logAlways("chat.eventsub.socket.refreshed", {
+				channel: config.channel,
+				resumed: Boolean(payload.resuming),
+			});
+		}
+		eventSubHasConnected = true;
 		const previousSocket = eventSubSocket;
 		eventSubReconnectUrl = undefined;
 		if (previousSocket && previousSocket !== payload.socket) previousSocket.close();
@@ -1355,6 +1416,8 @@ function processEventSubNotification(payload) {
 }
 
 function handleEventSubMessage(socket, data, resuming) {
+	if (eventSubSocket !== socket) return;
+	resetEventSubKeepaliveTimeout(socket);
 	let payload;
 	try {
 		payload = JSON.parse(data.toString());
@@ -1382,6 +1445,7 @@ async function connectTwitchChat(url, resuming = false) {
 	}
 	if (!resuming && eventSubSocket) {
 		const previousSocket = eventSubSocket;
+		clearEventSubKeepaliveTimeout(previousSocket);
 		eventSubSocket = undefined;
 		previousSocket.close();
 	}
@@ -1393,12 +1457,14 @@ async function connectTwitchChat(url, resuming = false) {
 			return;
 		}
 		const socket = new WebSocket(url || eventSubReconnectUrl || "wss://eventsub.wss.twitch.tv/ws");
+		clearEventSubKeepaliveTimeout(eventSubKeepaliveSocket);
 		eventSubSocket = socket;
 		socket.on("message", data => handleEventSubMessage(socket, data, resuming));
 		socket.on("error", error => {
 			log("chat.eventsub.socket.error", { message: error.message });
 		});
 		socket.on("close", () => {
+			clearEventSubKeepaliveTimeout(socket);
 			if (eventSubSocket !== socket) return;
 			eventSubSocket = undefined;
 			chatConnected = false;
