@@ -8,6 +8,9 @@
   "httpApi": {
     "token": "replace_with_a_random_token"
   },
+  "chat": {
+    "enabled": true
+  },
   "channel": "your_twitch_channel",
   "chatUser": ""
 }

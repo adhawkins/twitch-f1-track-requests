@@ -42,6 +42,11 @@ while live, its stream title.
    `track-requests/.track-request-auth.json` and refreshed as needed, so they
    do not need to reconnect after a server restart. Keep this file private; it
    is excluded by the app's `.gitignore` and is not served by the web server.
+   To run an instance without Twitch chat—for example, a development copy—set
+   `"chat": { "enabled": false }` in its `config.json`. That instance will not
+   connect to EventSub or accept a chat-account authorization; web and HTTP API
+   features remain available. Omit `chat.enabled` or set it to `true` for the
+   normal chat behavior.
 
 Protect the Twitch client secret, and do not expose it publicly. Keep the
 backend HTTP port reachable only by Traefik and trusted local services.
